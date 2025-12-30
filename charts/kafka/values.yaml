@@ -1,0 +1,56 @@
+replicaCount: 1
+
+broker:
+  brokerId: 1
+  replicaCount: 1
+  minInSyncReplicas: 1
+
+listeners:
+  client:
+    protocol: PLAINTEXT
+  controller:
+    protocol: PLAINTEXT
+  interbroker:
+    protocol: PLAINTEXT
+  external:
+    protocol: PLAINTEXT
+
+advertisedListeners:
+  - "PLAINTEXT://:29092"
+  - "PLAINTEXT_INTERNAL://kafka:9092"
+
+listenerSecurityProtocolMap: "PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT"
+
+service:
+  type: ClusterIP
+  ports:
+    client: 9092
+
+autoCreateTopicsEnable: true
+
+kraft:
+  enabled: true
+
+transactionStateLogReplicationFactor: 1
+transactionStateLogMinIsr: 1
+
+offsetsTopicReplicationFactor: 1
+
+persistence:
+  enabled: true
+  size: 1Gi
+  storageClass: ""
+
+resources:
+  limits:
+    memory: 1Gi
+    cpu: 1000m
+  requests:
+    memory: 512Mi
+    cpu: 500m
+
+
+image:
+  registry: docker.io
+  repository: bitnamilegacy/kafka
+  tag: 4.0.0-debian-12-r10

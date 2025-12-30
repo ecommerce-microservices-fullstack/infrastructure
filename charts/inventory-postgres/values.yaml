@@ -1,0 +1,31 @@
+auth:
+  existingSecret: inventory-postgres-secrets
+  secretKeys:
+    adminPasswordKey: POSTGRES_PASSWORD
+    userPasswordKey: POSTGRES_PASSWORD
+    
+  database: inventory
+  username: inventory
+
+architecture: standalone
+
+primary:
+  persistence:
+    enabled: true
+    size: 1Gi
+    storageClass: ""
+    accessModes:
+      - ReadWriteOnce
+  
+  service:
+    type: ClusterIP
+    ports:
+      postgresql: 5432
+  
+  resources:
+    limits:
+      memory: 256Mi
+      cpu: 500m
+    requests:
+      memory: 128Mi
+      cpu: 250m

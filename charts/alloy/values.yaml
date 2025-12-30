@@ -1,0 +1,48 @@
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+mounts:
+  dockercontainers: true
+
+alloy:
+  configMap:
+    create: true
+    content: |-
+      discovery.kubernetes "pods" {
+        role = "pod"
+        namespaces {
+          names = ["shop"]
+        }
+      }
+      
+      discovery.relabel "pods" {
+        targets = discovery.kubernetes.pods.targets
+        
+        rule {
+          source_labels = ["__meta_kubernetes_pod_phase"]
+          action = "keep"
+          regex = "Running"
+        }
+        
+        rule {
+          source_labels = ["__meta_kubernetes_pod_container_init"]
+          action = "drop"
+          regex = "true"
+        }
+      }
+
+      loki.source.kubernetes "pods" {
+        targets    = discovery.relabel.pods.output
+        forward_to = [loki.write.default.receiver]
+      }
+
+      loki.write "default" {
+        endpoint {
+          url = "http://loki:3100/loki/api/v1/push"
+        }
+      }

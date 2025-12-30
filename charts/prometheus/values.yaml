@@ -1,0 +1,31 @@
+server:
+  enableLifecycle: true
+
+  persistentVolume:
+    enabled: true
+    size: 1Gi
+  
+  service:
+    type: NodePort
+    servicePort: 9090
+
+  resources:
+    limits:
+      memory: 256Mi
+      cpu: 500m
+    requests:
+      memory: 128Mi
+      cpu: 250m
+
+  global:
+    scrape_interval: "15s"
+    scrape_timeout: "10s"
+      
+serverFiles:
+  prometheus.yml:
+    scrape_configs:
+      - job_name: "order-service"
+        metrics_path: /metrics
+        static_configs:
+          - targets:
+              - "orders:8080"

@@ -1,0 +1,81 @@
+repositories:
+  - name: bitnami
+    url: https://charts.bitnami.com/bitnami
+  - name: prometheus-community
+    url: https://prometheus-community.github.io/helm-charts
+  - name: grafana
+    url: https://grafana.github.io/helm-charts
+
+
+releases:
+  - name: kafka
+    namespace: shop
+    chart: bitnami/kafka
+    version: 32.4.3
+    values:
+      - ./charts/kafka/values.yaml
+
+  - name: prometheus
+    namespace: shop
+    chart: prometheus-community/prometheus
+    version: 27.50.1
+    values:
+      - ./charts/prometheus/values.yaml
+
+  - name: grafana
+    namespace: shop
+    chart: ./charts/grafana
+    version: 10.3.1
+    values:
+      - ./charts/grafana/values.yaml
+
+  - name: loki
+    namespace: shop
+    chart: grafana/loki
+    version: 6.49.0
+    values:
+      - ./charts/loki/values.yaml
+    installed: true
+
+  - name: alloy
+    namespace: shop
+    chart: grafana/alloy
+    version: 1.5.1
+    needs:
+      - loki
+    values:
+      - ./charts/alloy/values.yaml
+    installed: true
+
+  - name: order-postgresql
+    namespace: shop
+    chart: bitnami/postgresql
+    version: 18.1.13
+    values:
+      - ./charts/order-postgres/values.yaml
+
+  - name: orders
+    namespace: shop
+    chart: ./charts/order-service
+    needs:
+      - order-postgresql
+      - kafka
+    values:
+      - ./charts/order-service/values.yaml
+
+  - name: inventory-postgresql
+    namespace: shop
+    chart: bitnami/postgresql
+    version: 18.1.13
+    values:
+      - ./charts/inventory-postgres/values.yaml
+    installed: true
+
+  - name: inventory
+    namespace: shop
+    chart: ./charts/inventory-service
+    needs:
+      - inventory-postgresql
+      - kafka
+    values:
+      - ./charts/inventory-service/values.yaml

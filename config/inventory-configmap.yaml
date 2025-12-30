@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: inventory-config
+  namespace: shop
+data:
+  KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+  POSTGRES_HOST: inventory-postgresql
+  POSTGRES_PORT: "5432"
