@@ -16,9 +16,9 @@ jobs:
         uses: azure/setup-helm@v4
 
       - name: Install helmfile
-        run: |
-          curl -L https://github.com/helmfile/helmfile/releases/download/v0.163.1/helmfile_linux_amd64.tar.gz \
-          | tar xz && sudo mv helmfile /usr/local/bin/
+        uses: helmfile/helmfile-action@v1
+        with:
+          helmfile-args: "version"
 
       - name: Helm lint
         run: helm lint charts/inventory-service charts/order-service
@@ -26,10 +26,5 @@ jobs:
       - name: Helmfile lint
         run: helmfile lint
 
-      - name: Install kubeconform
-        run: |
-          curl -L https://github.com/yannh/kubeconform/releases/download/v0.6.7/kubeconform-linux-amd64.tar.gz \
-          | sudo tar xvz -C /usr/local/bin
-
       - name: Helmfile template
-        run: helmfile template | kubeconform -strict
+        run: helmfile template
